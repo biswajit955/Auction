@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!--============= Hero Section Starts Here =============-->
+    <div class="hero-section style-2">
+        <div class="container">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li>
+                    <a href="#0">My Account</a>
+                </li>
+                <li>
+                    <span>Personal profile</span>
+                </li>
+            </ul>
+        </div>
+        <div class="bg_img hero-bg bottom_center" data-background="{% static 'assets/images/banner/hero-bg.png' %}"></div>
+    </div>
+    <!--============= Hero Section Ends Here =============-->
+
+
+    <!--============= Dashboard Section Starts Here =============-->
+    <section class="dashboard-section padding-bottom mt--240 mt-lg--440 pos-rel">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-10 col-md-7 col-lg-4">
+                    <div class="dashboard-widget mb-30 mb-lg-0 sticky-menu">
+                        <div class="user">
+                            <div class="thumb-area">
+                                <div class="thumb">
+                                    {% if active_user.user_img %}
+                                        <img src="{{ active_user.user_img.url }}" alt="user">
+                                    {% else %}
+                                        <img src="https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg" alt="user">
+                                    {% endif %}
+                                    
+                                </div>
+                                <label for="profile-pic" data-toggle="modal" data-target="#edit-img" class="profile-pic-edit"><i
+                                        class="flaticon-pencil"></i></label>
+                            </div>
+                            <div class="content">
+                                <h5 class="title"><a href="#0">{{ request.user.first_name }} {{ request.user.last_name }}</a></h5>
+                                <span class="username">{{ request.user.email }}</span>
+                            </div>
+                        </div>
+                        <ul class="dashboard-menu">
+                            <li>
+                                <a href="dashboard.html"><i class="flaticon-dashboard"></i>Dashboard</a>
+                            </li>
+                            <li>
+                                <a href="#0" class="active"><i class="flaticon-settings"></i>Personal Profile </a>
+                            </li>
+                            <li>
+                                <a href="my-bid.html"><i class="flaticon-auction"></i>My Bids</a>
+                            </li>
+                            <li>
+                                <a href="winning-bids.html"><i class="flaticon-best-seller"></i>Winning Bids</a>
+                            </li>
+                            <li>
+                                <a href="notifications.html"><i class="flaticon-alarm"></i>My Alerts</a>
+                            </li>
+                            <li>
+                                <a href="my-favorites.html"><i class="flaticon-star"></i>My Favorites</a>
+                            </li>
+                            <li>
+                                <a href="referral.html"><i class="flaticon-shake-hand"></i>Referrals</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="dash-pro-item mb-30 dashboard-widget">
+                                <div class="header">
+                                    <h4 class="title">Personal Details</h4>
+                                    <span class="edit"><a data-toggle="modal" data-target="#edit-profile"><i class="flaticon-edit"></i> Edit</a></span>
+                                </div>
+                                <ul class="dash-pro-body">
+                                    <li>
+                                        <div class="info-name">Name</div>
+                                        <div class="info-value">{{ active_user.first_name }} {{ active_user.last_name }}</div>
+                                    </li>
+                                    <li>
+                                        <div class="info-name">Date of Birth</div>
+                                        <div class="info-value">{{ active_user.birthdate }}</div>
+                                    </li>
+                                    <li>
+                                        <div class="info-name">Address</div>
+                                        <div class="info-value">{{ active_user.Address }}</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="dash-pro-item mb-30 dashboard-widget">
+                                <div class="header">
+                                    <h4 class="title">Account Settings</h4>
+                                </div>
+                                <ul class="dash-pro-body">
+                                    <li>
+                                        <div class="info-name">Language</div>
+                                        <div class="info-value">English (United States)</div>
+                                    </li>
+                                    <li>
+                                        <div class="info-name">Time Zone</div>
+                                        <div class="info-value">(IST-06:00) Kolkata</div>
+                                    </li>
+                                    <li>
+                                        <div class="info-name">Status</div>
+                                        <div class="info-value"><i class="flaticon-check text-success"></i> Active</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="dash-pro-item mb-30 dashboard-widget">
+                                <div class="header">
+                                    <h4 class="title">Email Address</h4>
+                                </div>
+                                <ul class="dash-pro-body">
+                                    <li>
+                                        <div class="info-name">Email</div>
+                                        <div class="info-value"><a href="https://pixner.net/cdn-cgi/l/email-protection"
+                                                class="__cf_email__"
+                                                data-cfemail="52333e3037202661666b12353f333b3e7c313d3f">{{ active_user.email }}</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="dash-pro-item mb-30 dashboard-widget">
+                                <div class="header">
+                                    <h4 class="title">Phone</h4>
+                                    <span class="edit"><a data-toggle="modal" data-target="#edit-phone"><i class="flaticon-edit"></i> Edit</a></span>
+                                </div>
+                                <ul class="dash-pro-body">
+                                    <li>
+                                        <div class="info-name">Mobile</div>
+                                        <div class="info-value">{{ active_user.phone_number }}</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="dash-pro-item dashboard-widget">
+                                <div class="header">
+                                    <h4 class="title">Security</h4>
+                                    <span class="edit"><i class="flaticon-edit"></i> Edit</span>
+                                </div>
+                                <ul class="dash-pro-body">
+                                    <li>
+                                        <div class="info-name">Password</div>
+                                        <div class="info-value">xxxxxxxxxxxxxxxx</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--============= Dashboard Section Ends Here =============-->
+
+<div class="modal fade edit-profile-modal" id="edit-profile" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				{% if error_mgs %}
+				<h4 class="text-danger"> {{error_mgs}} </h4>
+				{% endif %}
+				<form action="" method="POST">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-12">
+							<label>User Name:</label>
+						</div>
+						<div class="col-md-5 col-8">
+							<div class="form-group">
+								<input type="text" class="form-control" name="edit_first_name"
+									value="{{user.first_name}}">
+							</div>
+						</div>
+						<div class="col-md-5">
+							<div class="form-group">
+								<input type="text" class="form-control" name="edit_last_name"
+									value="{{user.last_name}}">
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Date of Birth:</label>
+								<input type="date" name="edit_birth_date" value="{{user.birthdate|date:'Y-m-d'}}" min="1970-01-01">
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Address:</label>
+								<input type="text" class="form-control" name="edit_address"
+									value="{{user.Address}}">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" style="background-color:aqua">Save changes</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade edit-profile-modal" id="edit-phone" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="" method="POST">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-12">
+							<label>Phone :</label>
+						</div>
+						<div class="col-8">
+							<div class="form-group">
+								<input type="number" class="form-control" name="edit_phone"
+									value="{{user.phone_number}}">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" style="background-color:aqua">Save changes</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade edit-profile-modal" id="edit-img" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-12">
+							<label>Phone :</label>
+						</div>
+						<div class="col-8">
+							<div class="form-group">
+								<input class="form-control" id="seller" name="pic" type="file" required>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" style="background-color:aqua">Save changes</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+    {% endblock content %}

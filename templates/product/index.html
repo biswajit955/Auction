@@ -1,0 +1,640 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+        <!--============= Banner Section Starts Here =============-->
+        <section class="banner-section-2 bg_img" data-background="{% static 'assets/images/banner/banner-bg-3.png' %} ">
+            <div class="container">
+                <div class="row align-items-center justify-content-between align-items-center">
+                    <div class="col-md-10 col-lg-6 col-xl-6">
+                        <div class="banner-content cl-white">
+                            <h5 class="cate">Enjoy Exclusive</h5>
+                            <h1 class="title"><span class="d-xl-block">Hot Deal</span> For You</h1>
+                            <p>
+                                We’re constantly bringing new properties market so keep visiting our website that you don’t
+                                miss out on the next opportunity.
+                            </p>
+                            <a href="#0" class="custom-button yellow btn-large">Get Started</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-lg-6 col-xl-6 d-none d-lg-block">
+                        <div class="banner-thumb-3">
+                            <img src="{% static 'assets/images/banner/banner-3.png' %} " alt="banner">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-shape-2 d-none d-lg-block">
+                <img src="{% static 'assets/css/img/banner-shape-3.png' %} " alt="css">
+            </div>
+        </section>
+        <!--============= Banner Section Ends Here =============-->
+    
+    
+        <!--============= Hightlight Slider Section Starts Here =============-->
+        <div class="browse-slider-section mt--140">
+            <div class="container">
+                <div class="section-header-2 mb-4">
+                    <div class="left">
+                        <h6 class="title cl-white cl-lg-black pl-0">Browse the highlights</h6>
+                    </div>
+                    <div class="slider-nav">
+                        <a href="#0" class="bro-prev"><i class="flaticon-left-arrow"></i></a>
+                        <a href="#0" class="bro-next active"><i class="flaticon-right-arrow"></i></a>
+                    </div>
+                </div>
+                <div class="m--15">
+                    <div class="browse-slider owl-theme owl-carousel">
+                        {% for category in all_category %}
+                        <a href="{% url 'product_category' category.slug %}" class="browse-item">
+                            <img src="{{ category.category_images.url }}" alt="auction">
+                            <span class="info">{{ category.title }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--============= Hightlight Slider Section Ends Here =============-->
+    
+    
+        <!--============= Feture Auction Section Starts Here =============-->
+        <section class="feature-auction-section padding-bottom padding-top bg_img"
+            data-background="assets/images/auction/featured/featured-bg-1.jpg">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="title">Featured Items</h2>
+                    <p>Bid and win great deals,Our auction process is simple, efficient, and transparent.</p>
+                </div>
+                <div class="row justify-content-center mb-30-none">
+                    {% for product in all_product %}
+                        {% if product.featured  %}
+                            <div class="col-sm-10 col-md-6 col-lg-4">
+                                <div class="auction-item-2">
+                                    <div class="auction-thumb">
+                                        <a href="{{ product.get_absolute_url}}"><img src="{{ product.thumbnail_image.url }}"
+                                                alt="jewelry"></a>
+                                        <a href="#0" class="rating"><i class="far fa-star"></i></a>
+                                        <a href="#0" class="bid"><i class="flaticon-auction"></i></a>
+                                    </div>
+                                    <div class="auction-content">
+                                        <h6 class="title">
+                                            <a href="{{ product.get_absolute_url}}">{{ product.title }}</a>
+                                        </h6>
+                                        <div class="list-area">
+                                            <span class="list-item">
+                                                <span class="list-id">Item #</span>{{ product.product_code }}
+                                            </span>
+                                        </div>
+                                        <div class="bid-area">
+                                            <div class="bid-amount">
+                                                <div class="icon">
+                                                    <i class="flaticon-auction"></i>
+                                                </div>
+                                                <div class="amount-content">
+                                                    <div class="current">Current Bid</div>
+                                                    <div class="amount">$876.00</div>
+                                                </div>
+                                            </div>
+                                            <div class="bid-amount">
+                                                <div class="icon">
+                                                    <i class="flaticon-money"></i>
+                                                </div>
+                                                <div class="amount-content">
+                                                    <div class="current">Buy Now</div>
+                                                    <div class="amount">${{ product.final_price }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="countdown-area">
+                                            <div class="countdown">
+                                                <div id="bid_counter_{{ product.id }}"></div>
+                                            </div>
+                                            <span class="total-bids">30 Bids</span>
+                                        </div>
+                                        <div class="text-center">
+                                            <a href="#0" class="custom-button">Submit a bid</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="load-wrapper">
+                    <a href={% url 'all_product' %} class="normal-button">See All Auction</a>
+                </div>
+            </div>
+        </section>
+        <!--============= Feture Auction Section Ends Here =============-->
+    
+    
+        <!--============= Upcoming Auction Section Starts Here =============-->
+        <section class="upcoming-auction padding-bottom">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="title">Upcoming Auctions</h2>
+                    <p>You are welcome to attend and join in the action at any of our upcoming auctions.</p>
+                </div>
+            </div>
+            <div class="filter-wrapper">
+                <div class="container">
+                    <ul class="filter">
+                        <li class="active" data-check="*">
+                            <span><i class="flaticon-right-arrow"></i>All</span>
+                        </li>
+                        <li data-check=".live">
+                            <span><i class="flaticon-auction"></i>Live Auction</span>
+                        </li>
+                        <li data-check=".time">
+                            <span><i class="flaticon-time"></i>Time Auction</span>
+                        </li>
+                        <li data-check=".buy">
+                            <span><i class="flaticon-bag"></i>buy now</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="container">
+                <div class="auction-wrapper-5 m--15">
+                    {% for product in all_product %}
+                        <div class="auction-item-5 time">
+                            <div class="auction-inner">
+                                <div class="upcoming-badge" title="Upcoming Auction">
+                                    <i class="flaticon-auction"></i>
+                                </div>
+                                <div class="auction-thumb">
+                                    <a href="{{ product.get_absolute_url}}"><img src="{{ product.thumbnail_image.url }}"
+                                            alt="upcoming"></a>
+                                    <a href="#0" class="rating"><i class="far fa-star"></i></a>
+                                </div>
+                                <div class="auction-content">
+                                    <div class="title-area">
+                                        <h6 class="title">
+                                            <a href="{{ product.get_absolute_url}}">{{ product.title }}</a>
+                                        </h6>
+                                        <div class="list-area">
+                                            <span class="list-item">
+                                                <span class="list-id">Item #</span>{{ product.product_code }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="bid-area">
+                                        <div class="bid-inner">
+                                            <div class="bid-amount">
+                                                <div class="icon">
+                                                    <i class="flaticon-auction"></i>
+                                                </div>
+                                                <div class="amount-content">
+                                                    <div class="current">Current Bid</div>
+                                                    <div class="amount">$876.00</div>
+                                                </div>
+                                            </div>
+                                            <div class="bid-amount">
+                                                <div class="icon">
+                                                    <i class="flaticon-money"></i>
+                                                </div>
+                                                <div class="amount-content">
+                                                    <div class="current">Buy Now</div>
+                                                    <div class="amount">${{product.final_price}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bid-count-area">
+                                        <span class="item">
+                                            <span class="left">Total Bids</span>97 Bids
+                                        </span>
+                                        <span class="item">
+                                            <span class="left">Last Bid </span>7 mins ago
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="auction-bidding">
+                                    <span class="bid-title">Bidding ends in</span>
+                                    <div class="countdown">
+                                        <div id="bid_counter_{{ product.id }}"></div>
+                                    </div>
+                                    <div class="bid-incr">
+                                        <span class="title">Bid Increment</span>
+                                        <h4>$3</h4>
+                                    </div>
+                                    <a href="{{ product.get_absolute_url}}" class="custom-button">Submit a bid</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="auction-item-5 buy">
+                        <div class="auction-inner">
+                            <div class="upcoming-badge" title="Upcoming Auction">
+                                <i class="flaticon-auction"></i>
+                            </div>
+                            <div class="auction-thumb">
+                                <a href="{{ product.get_absolute_url}}"><img src="assets/images/auction/upcoming/upcoming-6.png"
+                                        alt="upcoming"></a>
+                                <a href="#0" class="rating"><i class="far fa-star"></i></a>
+                            </div>
+                            <div class="auction-content">
+                                <div class="title-area">
+                                    <h6 class="title">
+                                        <a href="{{ product.get_absolute_url}}">.6 Gram Pure Gold Nugget</a>
+                                    </h6>
+                                    <div class="list-area">
+                                        <span class="list-item">
+                                            <span class="list-id">Listing ID</span>14033488
+                                        </span>
+                                        <span class="list-item">
+                                            <span class="list-id">Item #</span>0900-027867
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="bid-area">
+                                    <div class="bid-inner">
+                                        <div class="bid-amount">
+                                            <div class="icon">
+                                                <i class="flaticon-auction"></i>
+                                            </div>
+                                            <div class="amount-content">
+                                                <div class="current">Current Bid</div>
+                                                <div class="amount">$876.00</div>
+                                            </div>
+                                        </div>
+                                        <div class="bid-amount">
+                                            <div class="icon">
+                                                <i class="flaticon-money"></i>
+                                            </div>
+                                            <div class="amount-content">
+                                                <div class="current">Buy Now</div>
+                                                <div class="amount">$5,00.00</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bid-count-area">
+                                    <span class="item">
+                                        <span class="left">Total Bids</span>97 Bids
+                                    </span>
+                                    <span class="item">
+                                        <span class="left">Last Bid </span>7 mins ago
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="auction-bidding">
+                                <span class="bid-title">Bidding ends in</span>
+                                <div class="countdown">
+                                    <div id="bid_counter8"></div>
+                                </div>
+                                <div class="bid-incr">
+                                    <span class="title">Bid Increment</span>
+                                    <h4>$3</h4>
+                                </div>
+                                <a href="#0" class="custom-button">Submit a bid</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="auction-item-5 time">
+                        <div class="auction-inner">
+                            <div class="upcoming-badge" title="Upcoming Auction">
+                                <i class="flaticon-auction"></i>
+                            </div>
+                            <div class="auction-thumb">
+                                <a href="{{ product.get_absolute_url}}"><img src="assets/images/auction/upcoming/upcoming-7.png"
+                                        alt="upcoming"></a>
+                                <a href="#0" class="rating"><i class="far fa-star"></i></a>
+                            </div>
+                            <div class="auction-content">
+                                <div class="title-area">
+                                    <h6 class="title">
+                                        <a href="{{ product.get_absolute_url}}">Magnifying Glasses, Jewelry Loupe...</a>
+                                    </h6>
+                                    <div class="list-area">
+                                        <span class="list-item">
+                                            <span class="list-id">Listing ID</span>14033488
+                                        </span>
+                                        <span class="list-item">
+                                            <span class="list-id">Item #</span>0900-027867
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="bid-area">
+                                    <div class="bid-inner">
+                                        <div class="bid-amount">
+                                            <div class="icon">
+                                                <i class="flaticon-auction"></i>
+                                            </div>
+                                            <div class="amount-content">
+                                                <div class="current">Current Bid</div>
+                                                <div class="amount">$876.00</div>
+                                            </div>
+                                        </div>
+                                        <div class="bid-amount">
+                                            <div class="icon">
+                                                <i class="flaticon-money"></i>
+                                            </div>
+                                            <div class="amount-content">
+                                                <div class="current">Buy Now</div>
+                                                <div class="amount">$5,00.00</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bid-count-area">
+                                    <span class="item">
+                                        <span class="left">Total Bids</span>97 Bids
+                                    </span>
+                                    <span class="item">
+                                        <span class="left">Last Bid </span>7 mins ago
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="auction-bidding">
+                                <span class="bid-title">Bidding ends in</span>
+                                <div class="countdown">
+                                    <div id="bid_counter9"></div>
+                                </div>
+                                <div class="bid-incr">
+                                    <span class="title">Bid Increment</span>
+                                    <h4>$3</h4>
+                                </div>
+                                <a href="#0" class="custom-button">Submit a bid</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="auction-item-5 live">
+                        <div class="auction-inner">
+                            <div class="upcoming-badge" title="Upcoming Auction">
+                                <i class="flaticon-auction"></i>
+                            </div>
+                            <div class="auction-thumb">
+                                <a href="{{ product.get_absolute_url}}"><img src="assets/images/auction/upcoming/upcoming-8.png"
+                                        alt="upcoming"></a>
+                                <a href="#0" class="rating"><i class="far fa-star"></i></a>
+                            </div>
+                            <div class="auction-content">
+                                <div class="title-area">
+                                    <h6 class="title">
+                                        <a href="{{ product.get_absolute_url}}">"Small Primitive Shell" Glass Sculpture</a>
+                                    </h6>
+                                    <div class="list-area">
+                                        <span class="list-item">
+                                            <span class="list-id">Listing ID</span>14033488
+                                        </span>
+                                        <span class="list-item">
+                                            <span class="list-id">Item #</span>0900-027867
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="bid-area">
+                                    <div class="bid-inner">
+                                        <div class="bid-amount">
+                                            <div class="icon">
+                                                <i class="flaticon-auction"></i>
+                                            </div>
+                                            <div class="amount-content">
+                                                <div class="current">Current Bid</div>
+                                                <div class="amount">$876.00</div>
+                                            </div>
+                                        </div>
+                                        <div class="bid-amount">
+                                            <div class="icon">
+                                                <i class="flaticon-money"></i>
+                                            </div>
+                                            <div class="amount-content">
+                                                <div class="current">Buy Now</div>
+                                                <div class="amount">$5,00.00</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bid-count-area">
+                                    <span class="item">
+                                        <span class="left">Total Bids</span>97 Bids
+                                    </span>
+                                    <span class="item">
+                                        <span class="left">Last Bid </span>7 mins ago
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="auction-bidding">
+                                <span class="bid-title">Bidding ends in</span>
+                                <div class="countdown">
+                                    <div id="bid_counter10"></div>
+                                </div>
+                                <div class="bid-incr">
+                                    <span class="title">Bid Increment</span>
+                                    <h4>$3</h4>
+                                </div>
+                                <a href="#0" class="custom-button">Submit a bid</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--============= Upcoming Auction Section Ends Here =============-->
+    
+    
+        <!--============= How Section Starts Here =============-->
+        <section class="how-video-section pos-rel">
+            <div class="popular-bg bg_img" data-background="assets/images/auction/popular/popular-bg2.png"></div>
+            <div class="how-video-shape bg_img d-none d-md-block" data-background="assets/css/img/how-video.png"></div>
+            <div class="container">
+                <div class="how-video-wrapper">
+                    <div class="how-video-area">
+                        <a href="https://www.youtube.com/watch?v=Mj3QejzYZ70" class="popup">
+                            <h5 class="title">Watch Our Videos</h5>
+                            <div class="video-button">
+                                <i class="flaticon-right-arrow-1"></i>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="how-wrapper section-bg shadow-style">
+                    <div class="section-header text-lg-left">
+                        <h2 class="title">How it works</h2>
+                        <p>Easy 3 steps to win</p>
+                    </div>
+                    <div class="row justify-content-center mb--40">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="how-item">
+                                <div class="how-thumb">
+                                    <img src="assets/images/how/how1.png" alt="how">
+                                </div>
+                                <div class="how-content">
+                                    <h4 class="title">Sign Up</h4>
+                                    <p>No Credit Card Required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="how-item">
+                                <div class="how-thumb">
+                                    <img src="assets/images/how/how2.png" alt="how">
+                                </div>
+                                <div class="how-content">
+                                    <h4 class="title">Bid</h4>
+                                    <p>Bidding is free Only pay if you win</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="how-item">
+                                <div class="how-thumb">
+                                    <img src="assets/images/how/how3.png" alt="how">
+                                </div>
+                                <div class="how-content">
+                                    <h4 class="title">Win</h4>
+                                    <p>Fun - Excitement - Great deals</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--============= How Section Ends Here =============-->
+    
+    
+        <!--============= Call In Section Starts Here =============-->
+        <section class="call-in-section padding-top">
+            <div class="container">
+                <div class="call-wrapper cl-white bg_img" data-background="assets/images/call-in/call-bg.png">
+                    <div class="section-header">
+                        <h3 class="title">Register for Free & Start Bidding Now!</h3>
+                        <p>From cars to diamonds to iPhones, we have it all.</p>
+                    </div>
+                    <a href="sign-up.html" class="custom-button white">Register</a>
+                </div>
+            </div>
+        </section>
+        <!--============= Call In Section Ends Here =============-->
+    
+    
+        <!--============= Client Section Starts Here =============-->
+        <section class="client-section padding-top padding-bottom">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="title">Don’t just take our word for it!</h2>
+                    <p>Our hard work is paying off. Great reviews from amazing customers.</p>
+                </div>
+                <div class="m--15">
+                    <div class="client-slider owl-theme owl-carousel">
+                        <div class="client-item">
+                            <div class="client-content">
+                                <p>I can't stop bidding! It's a great way to spend some time and I want everything on Sbidu.
+                                </p>
+                            </div>
+                            <div class="client-author">
+                                <div class="thumb">
+                                    <a href="#0">
+                                        <img src="assets/images/client/client01.png" alt="client">
+                                    </a>
+                                </div>
+                                <div class="content">
+                                    <h6 class="title"><a href="#0">Alexis Moore</a></h6>
+                                    <div class="ratings">
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <div class="client-content">
+                                <p>I came I saw I won. Love what I have won, and will try to win something else.</p>
+                            </div>
+                            <div class="client-author">
+                                <div class="thumb">
+                                    <a href="#0">
+                                        <img src="assets/images/client/client02.png" alt="client">
+                                    </a>
+                                </div>
+                                <div class="content">
+                                    <h6 class="title"><a href="#0">Darin Griffin</a></h6>
+                                    <div class="ratings">
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <div class="client-content">
+                                <p>This was my first time, but it was exciting. I will try it again. Thank you so much.</p>
+                            </div>
+                            <div class="client-author">
+                                <div class="thumb">
+                                    <a href="#0">
+                                        <img src="assets/images/client/client03.png" alt="client">
+                                    </a>
+                                </div>
+                                <div class="content">
+                                    <h6 class="title"><a href="#0">Tom Powell</a></h6>
+                                    <div class="ratings">
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                        <span><i class="fas fa-star"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <!--============= Client Section Ends Here =============-->
+
+        <script>
+
+            function initializeCountdown(productId, startDate, endDate) {
+                const countdownElement = document.querySelector(`#bid_counter_${productId}`);
+                const currentDate = new Date();
+        
+                if (startDate > currentDate) {
+                    countdownElement.textContent = 'Coming Soon..';
+                } else if (endDate < currentDate) {
+                    countdownElement.textContent = 'Expired';
+                } else {
+                    const interval = setInterval(updateCountdown, 1000);
+        
+                    function updateCountdown() {
+                        const remainingTime = endDate - new Date();
+        
+                        if (remainingTime <= 0) {
+                            clearInterval(interval);
+                            countdownElement.textContent = 'Expired';
+                        } else {
+                            const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+        
+                            countdownElement.textContent = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
+                        }
+                    }
+        
+                    updateCountdown();
+                }
+            }
+        
+            // Call the function for each product
+            {% for product in all_product %}
+                initializeCountdown(
+                    {{ product.id }},
+                    new Date('{{ product.bid_start_time |escapejs }}'),
+                    new Date('{{ product.bid_end_time |escapejs }}')
+                );
+            {% endfor %}
+        </script>
+
+{% endblock content %}

@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+
+
+{% block content %}
+
+    <!--============= Hero Section Starts Here =============-->
+    <div class="hero-section">
+        <div class="container">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li>
+                    <span>Sign Up</span>
+                </li>
+            </ul>
+        </div>
+        <div class="bg_img hero-bg bottom_center" data-background="{% static 'assets/images/banner/hero-bg.png' %} "></div>
+    </div>
+    <!--============= Hero Section Ends Here =============-->
+
+
+    <!--============= Account Section Starts Here =============-->
+    <section class="account-section padding-bottom">
+        <div class="container">
+            <div class="account-wrapper mt--100 mt-lg--440">
+                <div class="left-side">
+                    <div class="section-header">
+                        <h2 class="title">SIGN UP</h2>
+                        <p>We're happy you're here!</p>
+                    </div>
+                    <ul class="login-with">
+                        <li>
+                            <a href="{% provider_login_url "facebook" next='/success/' %}"><i class="fab fa-facebook"></i>Log in with Facebook</a>
+                        </li>
+                        <li>
+                            <a href="{% provider_login_url 'google' %}"><i class="fab fa-google-plus"></i>Log in with Google</a>
+                        </li>
+                    </ul>
+                    <div class="or">
+                        <span>Or</span>
+                    </div>
+                    <form class="login-form" method="post" onsubmit="return validateUser()">
+                        {% csrf_token %}
+                        <div class="form-group mb-30">
+                            <label for="login-email"><i class="far fa-envelope"></i></label>
+                            <input type="text" id="login-email" name="email" placeholder="Email Address" required>
+                        </div>
+                        <div class="form-group mb-30">
+                            <label for="login-email"><i class="fa fa-user"></i></label>
+                            <select id="dropdown" name="dropdown" class="styled-select" required>
+                                <option value="user_none">&nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; User Type</option> 
+                                <option value="seller">&nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Seller</option>
+                                <option value="buyer">&nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Buyer</option>
+                            </select>
+                            <div id="user-errors" style="color: red;"></div>
+                        </div>
+                        <div class="form-group mb-30">
+                            <label for="login-pass"><i class="fas fa-lock"></i></label>
+                            <input type="password" id="password" class="error-message" name="Password" placeholder="Password" onkeyup="validatePassword()" required>
+                            <span class="pass-type"><i class="fas fa-eye"></i></span>
+                            <div id="password-errors" style="color: red;"></div>
+                        </div>
+                        <div class="form-group mb-30">
+                            <label for="login-pass"><i class="fas fa-lock"></i></label>
+                            <input type="password" id="login-pass" name="confirm_password" placeholder="Confirm Password" onkeyup="verifyPasswords()" required>
+                            <span class="pass-type"><i class="fas fa-eye"></i></span>
+                            <div id="password-error" style="color: red;"></div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <button type="submit" id="submit-button" class="custom-button">SIGN UP</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="right-side cl-white">
+                    <div class="section-header mb-0">
+                        <h3 class="title mt-0">ALREADY HAVE AN ACCOUNT?</h3>
+                        <p>Log in and go to your Dashboard.</p>
+                        <a href="{% url 'login' %}" class="custom-button transparent">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--============= Account Section Ends Here =============-->  
+    <script>
+        function validatePassword() {
+            const passwordInput = document.getElementById("password");
+            const passwordErrors = document.getElementById("password-errors");
+            var submitButton = document.getElementById("submit-button");
+            const password = passwordInput.value;
+        
+            // Define password validation rules
+            const minLength = 8;
+            const containsUppercase = /[A-Z]/.test(password);
+            const containsLowercase = /[a-z]/.test(password);
+            const containsNumber = /[0-9]/.test(password);
+            const containsSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(password);
+        
+            // Store error messages
+            let errors = [];
+        
+            // Check each validation rule and add errors to the array
+            if (password.length < minLength) {
+                errors.push("Password must be at least " + minLength + " characters.");
+            }
+            if (!containsUppercase) {
+                errors.push("Password must contain at least one uppercase letter.");
+            }
+            if (!containsLowercase) {
+                errors.push("Password must contain at least one lowercase letter.");
+            }
+            if (!containsNumber) {
+                errors.push("Password must contain at least one number.");
+            }
+            if (!containsSpecial) {
+                errors.push("Password must contain at least one special character.");
+            }
+        
+            // Display the first error message in the array
+            if (errors.length > 0) {
+                passwordErrors.innerHTML = errors[0];
+                passwordInput.classList.add("invalid");
+                submitButton.disabled = true;
+            } else {
+                passwordErrors.innerHTML = "";
+                passwordInput.classList.remove("invalid");
+                submitButton.disabled = false;
+            }
+        }
+
+        function verifyPasswords() {
+            var password1 = document.getElementById("password").value;
+            var password2 = document.getElementById("login-pass").value;
+            var passwordError = document.getElementById("password-error");
+            var submitButton = document.getElementById("submit-button");
+        
+            // Check if passwords match
+            if (password1 !== password2) {
+                passwordError.textContent = "Passwords do not match";
+                submitButton.disabled = true;
+            } else {
+                passwordError.textContent = "";
+                submitButton.disabled = false;
+            }
+        }
+    </script> 
+
+    {% endblock content %}
