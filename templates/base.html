@@ -75,10 +75,10 @@
                         </li>
                     </ul>
                     <ul class=" menu cart-button-area">
-                        <li>
+                        <!-- <li>
                             <a href="#0" class="cart-button"><i class="flaticon-shopping-basket"></i><span
                                     class="amount">08</span></a>
-                        </li>
+                        </li> -->
                         <li>
                             {% if user.is_authenticated %}
                                 <a ><i class="flaticon-user"></i> &nbsp; {{ request.user.email }}</a>
@@ -151,16 +151,19 @@
                                             <a href="{% url 'profile' %}">Personal Profile</a>
                                         </li>
                                         <li>
-                                            <a href="my-bid.html">My Bids</a>
+                                            <a href="{% url 'my_bid_list' %}">My Bids</a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'my_cart' %}">My Carts</a>
                                         </li>
                                         <li>
                                             <a href="winning-bids.html">Winning Bids</a>
                                         </li>
                                         <li>
-                                            <a href="notifications.html">My Alert</a>
+                                            <a href="{% url 'user-alerts' %}">My Alert</a>
                                         </li>
                                         <li>
-                                            <a href="my-favorites.html">My Favorites</a>
+                                            <a href="{% url 'my_watchlist_list' %}">My Favorites</a>
                                         </li>
                                         <li>
                                             <a href="referral.html">Referrals</a>
@@ -208,7 +211,7 @@
             </a>
             <span class="side-sidebar-close-btn"><i class="fas fa-times"></i></span>
         </div>
-        <div class="bottom-content">
+        <!-- <div class="bottom-content">
             <div class="cart-products">
                 <h4 class="title">Shopping cart</h4>
                 <div class="single-product-item">
@@ -265,7 +268,7 @@
                     <a href="#0" class="custom-button"><span>Checkout</span></a>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
     <!--============= Cart Section Ends Here =============-->
 
