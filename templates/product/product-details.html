@@ -64,8 +64,40 @@
         }
 
     #valabasa {
-        font-size: 100px;
+        font-size: 50px;
     }
+
+    .cart-message {
+        position: fixed;
+        z-index: 100;
+        display: none;
+        top: 77px;
+        right: -100%;
+        padding: 10px 20px;
+        background-color: blanchedalmond;
+        border-radius: 45px;
+        animation: slideInRight 0.5s ease-in-out forwards, moveBackRight 0.5s ease-in-out 3s forwards;
+    }
+
+    @keyframes slideInRight {
+        from {
+            right: -100%;
+        }
+        to {
+            right: 15px;
+        }
+    }
+
+    @keyframes moveBackRight {
+        from {
+            right: 15px;
+        }
+        to {
+            right: -100%;
+        }
+    }
+
+
 </style>
     <!--============= Hero Section Starts Here =============-->
     <div class="hero-section style-2">
@@ -86,7 +118,9 @@
     </div>
     <!--============= Hero Section Ends Here =============-->
 
-
+    <div>
+        <h4 id="cart_mgs" class="cart-message">Add To Cart</h4>
+    </div>
     <!--============= Product Details Section Starts Here =============-->
     <section class="product-details padding-bottom mt--240 mt-lg--440">
         <div class="container">
@@ -126,7 +160,6 @@
                             <ul>
                                 <li>Item #: {{ product_detail.product_code }}</li>
                             </ul>
-                            <i id="valabasa" class="fa-sharp fa-solid fa-heart" style="color: rgb(179, 177, 177);"></i>
                         </div>
                         <ul class="price-table mb-30">
                             <li class="header">
@@ -166,10 +199,10 @@
                             </form>
                         </div>
                         <div class="buy-now-area">
-                            <a href="#0" class="rating custom-button border" id="final_price">Add To Card: {{ product_detail.final_price }}</a>
-                            <a href="#0" class="rating custom-button  border"><i class="fas fa-star"></i> Add to
-                                Wishlist</a>
-                            <div class="share-area">
+                            <a href="#0" class="final_price rating custom-button border" id="final_price">Add To Card: {{ product_detail.final_price }}</a>
+
+                            <i id="valabasa" class="fa-sharp fa-solid fa-heart btn btn-light border px-2 icon-hover-primary" title="Add To Favorite" style="color: rgb(179, 177, 177); margin-left: 400px;"></i>
+                            <div class="share-area" >
                                 <span>Share to:</span>
                                 <ul>
                                     <li>
@@ -637,6 +670,7 @@
             method: 'GET',
             url: `/watchlist/${slug}/`,
             success: function (data) {
+                console.log(data,"-----------");
                 if (data['product'].includes(slug)){
                     const heartIcon = document.getElementById("valabasa");
                     heartIcon.classList.toggle("red-color");
@@ -727,7 +761,6 @@
                 const remainingTime = endDate - new Date();
     
                 if (remainingTime <= 0) {
-                    // Auction has ended
                     clearInterval(interval);
                     countdownElement.textContent = 'Expired';
                 } else {
@@ -739,42 +772,8 @@
                     countdownElement.textContent = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
                 }
             }
-            updateCountdown(); // Update countdown immediately
+            updateCountdown(); 
         }
-
-
-
-        // function makeAjaxCall() {
-        //     $.ajax({
-        //         type: "GET",
-        //         url: `/product/${slug}`,
-        //         success: function(data) {
-        //             console.log(data);
-        //             var user = "{{ user }}";
-        //             // document.getElementById("price").innerHTML =data['current_bid_amount']
-        //             document.getElementById("total_bids").innerHTML =data['total_bids']
-        //             document.getElementById("active-bidders").innerHTML = data['active_bidders']
-        //             if (user == data['bider_name']){
-        //                 document.getElementById("last-bidder").innerHTML = `${data['bider_name']} (you)`
-        //             }
-        //             else{
-        //                 document.getElementById("last-bidder").innerHTML = `${data['bider_name']}`
-        //             }
-
-                    
-                    
-        //         },
-        //         error: function(jqXHR, textStatus, errorThrown) {
-        //             // Handle any errors
-        //             console.error("AJAX Error: " + errorThrown);
-        //         }
-        //     });
-        // }
-
-        // makeAjaxCall();
-        // console.log("mmmmmmmmmmmmmmmmm");
-        // const ajaxInterval = 10000;
-        // setInterval(makeAjaxCall, ajaxInterval);
 
         
 
@@ -808,6 +807,64 @@
             inputField.value = newValue;
         });
 
+        var slug = '{{ product_detail.slug }}';
+        console.log(slug);
+        $.ajax({
+            method: 'GET',
+            url: `/add_cart/${slug}/`,
+            success: function (data) {
+                try{
+                    if (data['products'].includes(slug)){
+                        console.log(data,"-----------");
+                        const final_price = document.getElementById("final_price")
+                        final_price.innerHTML = "Go To Cart"
+                        final_price.href= "{% url 'my_cart' %}"
+                        final_price.id="";
+                        
+                    }
+                    else{
+                        $('#final_price').click(function() {
+                        const final_price = document.getElementById("final_price")
+                        $("#cart_mgs").show().delay(3000).fadeOut();
+                        final_price.innerHTML = "Go To Cart";
+                        final_price.id="";
+                        $.ajax({
+                                type: "POST",
+                                data: {
+                                    'key': 'add_cart',
+                                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                },
+                                url: `/add_cart/${slug}/`,
+                                success: function (data) {
+                                    console.log(data);     
+                                },
+                            });
+                        });
+                        final_price.href= "{% url 'my_cart' %}"
+                    }}
+                catch{
+                    $('#final_price').click(function() {
+                    const final_price = document.getElementById("final_price")
+                    $("#cart_mgs").show().delay(3000).fadeOut();
+                    final_price.innerHTML = "Go To Cart";
+                    final_price.id="";
+                    $.ajax({
+                            type: "POST",
+                            data: {
+                                'key': 'add_cart',
+                                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            },
+                            url: `/add_cart/${slug}/`,
+                            success: function (data) {
+                                console.log(data);     
+                            },
+                        });
+                    });
+                    final_price.href= "{% url 'my_cart' %}"
+                }
+            },
+        }); 
+
         // Add event listener for the minus button
         subButton.addEventListener("click", function () {
             // Decrement by 500, but don't go below the minimum
@@ -817,6 +874,9 @@
             }
             inputField.value = newValue;
         });
+
+
+        
     
     </script>
 

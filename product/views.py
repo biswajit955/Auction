@@ -1,16 +1,18 @@
 from datetime import datetime
+from typing import Any
+from django.db.models.query import QuerySet
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render ,redirect
 from django.views import View
 from django.views.generic.list import ListView 
-from django.views.generic.detail import DetailView
-from product.serializers import WatchlistSerializer
+from django.db.models import F, Q
+from product.serializers import AddCartSerializer, CartSerializer, WatchlistSerializer
 from django.contrib import messages
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.models import BaseUser
-from .models import Product ,Category,Image ,ProductVisit, Watchlist
+from .models import CartItem, Product ,Category,Image ,ProductVisit, Watchlist
 import requests
 import random
 from django.core.files.base import ContentFile
@@ -163,9 +165,48 @@ class ProductDetailView(View):
         return redirect('product_details', slug=kwargs['slug'])
     
 
+class MyWatchlistList(ListView):
+    model = Watchlist
+    template_name='product/my-favorites.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["products"] = self.model.objects.get(user=self.request.user).product.all()
+        context["active_user"] = BaseUser.objects.get(email=self.request.user.email)
+        return context
+    
+
+class MyBidList(ListView):
+    model = Product
+    template_name='product/my-bid.html'
+    context_object_name="products"
+
+    def get_queryset(self) -> QuerySet[Any]:
+        qs =  super().get_queryset()
+        return qs.filter(buyer=self.request.user)
+    
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["active_user"] = BaseUser.objects.get(email=self.request.user.email)
+        return context
+    
 
 
-class WatchlistView(APIView):
+class MyCartList(ListView):
+    model = CartItem
+    template_name='product/my-cart.html'
+    context_object_name="products"
+    
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        # context["products"] = [p.product for p in self.get_queryset()]
+        context["count"] = self.get_queryset().count()
+        return context
+    
+
+
+
+class WatchlistListAddView(APIView):
     serializer_class = WatchlistSerializer
     def get(self,request,*args, **kwargs):
         user_watchlist = Watchlist.objects.filter(user=request.user).first()
@@ -187,3 +228,40 @@ class WatchlistView(APIView):
             watchlist_instance.product.remove(product)
             serializer = self.serializer_class(watchlist_instance)
             return Response(({"response":"remove from Watchlist","data":serializer.data}))
+
+
+class AddCartView(APIView):
+    serializer_class = CartSerializer
+    
+    def get(self,request,*args, **kwargs):
+        user_cart = CartItem.objects.filter(user=request.user).first()
+        if user_cart:
+            serializer = AddCartSerializer(user_cart, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response({'cart': None})
+        
+    def post(self, request,slug, *args, **kwargs):
+        product = get_object_or_404(Product, slug=slug)
+        if request.POST['key']== "add_cart":
+            if CartItem.objects.filter(product=product).exists():
+                cart_instance = CartItem.objects.get(product=product)
+                print(cart_instance.quantity,"..........")
+                cart_instance.quantity=cart_instance.quantity+1
+                cart_instance.save()
+            else:
+                cart_instance = CartItem.objects.create(user=request.user,product=product,quantity=1)
+            serializer = AddCartSerializer(cart_instance, context={'request': request})
+            return Response(({"response":"Add to cart","data":serializer.data}))
+        
+        if request.POST['key']== "update_cart":
+            cart_instance = CartItem.objects.get(Q(product=product) & Q(user=request.user))
+            cart_instance.quantity = request.POST['count']
+            cart_instance.save()
+            return Response(({"response":f"quantity update on {product}"}))
+
+        
+        if request.POST['key']== "remove_cart":
+            obj =CartItem.objects.get(Q(product=product) & Q(user=request.user))
+            data = CartItem.objects.get(Q(product=product) & Q(user=request.user)).delete()
+            return Response(({"response":"remove from cart","price":int(obj.product.final_price)*int(obj.quantity)}))
