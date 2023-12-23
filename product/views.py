@@ -1,14 +1,12 @@
 from datetime import datetime
 from typing import Any
 from django.db.models.query import QuerySet
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render ,redirect
 from django.views import View
 from django.views.generic.list import ListView 
 from django.db.models import F, Q
 from product.serializers import AddCartSerializer, CartSerializer, WatchlistSerializer
 from django.contrib import messages
-from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.models import BaseUser
@@ -17,53 +15,57 @@ import requests
 import random
 from django.core.files.base import ContentFile
 
+
 def database_entry(request):
     url = 'https://dummyjson.com/products'
+    # url = 'https://dummyjson.com/products/categories'
+
 
     response = requests.get(url)
     response_data = response.json()
 
     # for product in response_data:
     #     Category.objects.create(title=product)
-    i =12
+
     for product in response_data['products']:
-        img_list = []
-        for img_url in product['images']:
-            response = requests.get(img_url)
-            image_content = ContentFile(response.content)
-            filename = img_url.split("/")[-1]  # Extracts the filename from the URL
-            image = Image.objects.create(image=image_content)
-            image.image.name = filename  # Set the name attribute
-            image.save()
-            img_list.append(image)
+        if product['id'] > 20:
+            img_list = []
+            for img_url in product['images']:
+                response = requests.get(img_url)
+                image_content = ContentFile(response.content)
+                filename = img_url.split("/")[-1]  # Extracts the filename from the URL
+                image = Image.objects.create(image=image_content)
+                image.image.name = filename  # Set the name attribute
+                image.save()
+                img_list.append(image)
 
-        categories, created = Category.objects.get_or_create(title=product['category'])
+            # categories, created = Category.objects.get_or_create(title=product['category'])
 
-        random_number = random.randint(int(product['price']) + 2000, int(product['price']) + 4000)
-        products = Product.objects.create(
-            id = i,
-            title=product['title'],
-            Description=product['description'][0:149],
-            starting_price=product['price'],
-            final_price=random_number,
-            product_code = i,
-            discount_percentage=product['discountPercentage'],
-            categories=categories,
-            bid_start_time='2023-09-10',
-            bid_end_time='2023-09-20',
-            current_bid_amount=0,
-            active_bidders=0,
-            total_bids=0
-        )
-
-        last_image = img_list[-1]
-        products.thumbnail_image = last_image.image
-        products.images.set(img_list)
-        products.save()
-        i+=1
-        # products = Product.objects.get(title=product['title'])
-        # products.featured = False
-        # products.save()
+            # random_number = random.randint(int(product['price']) + 2000, int(product['price']) + 4000)
+            # products = Product.objects.create(
+            #     title=product['title'],
+            #     Description=product['description'][0:149],
+            #     starting_price=product['price'],
+            #     final_price=random_number,
+            #     product_code = random.randint(1,1000),
+            #     discount_percentage=product['discountPercentage'],
+            #     categories=categories,
+            #     bid_start_time='2023-09-10',
+            #     bid_end_time='2023-12-20',
+            #     current_bid_amount=0,
+            #     active_bidders=0,
+            #     total_bids=0
+            # )
+            products = Product.objects.get(title=product['title'])
+            last_image = img_list[-1]
+            products.thumbnail_image = last_image.image
+            products.images.set(img_list)
+            products.featured = False
+            products.save()
+            print(products)
+            # products = Product.objects.get(title=product['title'])
+            # products.featured = False
+            # products.save()
 
 
 class HomeView(ListView):
@@ -81,19 +83,6 @@ class HomeView(ListView):
         context['courent_time']= datetime.now()
         return context
 
-
-    # def get(self, request, *args, **kwargs):
-    #     all_category = Category.objects.all()
-
-    #     all_product = Product.objects.all()
-    #     all_product_img =[]
-    #     for product in all_product:
-    #         all_product_img.append([i.image for i in product.images.all()])
-    #     return render(request,self.template_name,context={'all_category':all_category,
-    #                                                       'all_product':all_product,
-    #                                                       'all_product_img':all_product_img[-1]})
-
-    
 class ProductListView(ListView):
     model = Product
     context_object_name = 'product_list'
@@ -147,6 +136,7 @@ class ProductDetailView(View):
     
     def post(self, request, *args, **kwargs):
         datas = request.POST.get('bid_ammount')
+        print(datas)
         product = Product.objects.get(slug=kwargs['slug'])
         if 'exit' in self.request.POST:
             print(request.user)
@@ -154,10 +144,13 @@ class ProductDetailView(View):
             product.active_bidders = product.bider.count()
             product.save()
             return redirect('all_product')
-            
+        
+        current_bidder = product.buyer
+        total_bids = product.total_bids+1 if product.total_bids != None else 1
+
         product.bider.add(request.user)
         product.buyer = request.user
-        product.total_bids += 1
+        product.total_bids = total_bids
         product.active_bidders = product.bider.count()
         product.current_bid_amount = float(datas)
         product.save()
@@ -171,8 +164,9 @@ class MyWatchlistList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["products"] = self.model.objects.get(user=self.request.user).product.all()
-        context["active_user"] = BaseUser.objects.get(email=self.request.user.email)
+        if Watchlist.objects.filter(user=self.request.user).exists():
+            context["products"] = self.model.objects.get(user=self.request.user).product.all()
+            context["active_user"] = BaseUser.objects.get(email=self.request.user.email)
         return context
     
 

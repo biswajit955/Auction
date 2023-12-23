@@ -78,6 +78,7 @@ class BidUpdateConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
+        print(data)
         database_amount = await database_sync_to_async(Product.objects.get)(slug=self.room_name)
         user = await database_sync_to_async(BaseUser.objects.get)(email=data['username'])
         bider_user = await database_sync_to_async(list)(database_amount.bider.all())
@@ -87,16 +88,18 @@ class BidUpdateConsumer(AsyncWebsocketConsumer):
         Last_bidder = f"{user.first_name} {user.last_name}"
         if Last_bidder == ' ':
             Last_bidder = f"{user.email}"
-        
-        last_bid_increment = float(data['price']) - float(database_amount.current_bid_amount)
-
+        if database_amount.current_bid_amount != None:
+            last_bid_increment = float(data['price']) - float(database_amount.current_bid_amount)
+        else:
+            last_bid_increment = float(data['price'])
+            
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type':'send_amount',
                 'price':data['price'],
                 'last_bid_increment' :last_bid_increment,
-                'total_bids' : int(database_amount.total_bids)+1,
+                'total_bids' : int(database_amount.total_bids)+1 if database_amount.total_bids else 1,
                 'active_bidders':len(bider_user),
                 'last_bidder':Last_bidder
                 
@@ -105,3 +108,62 @@ class BidUpdateConsumer(AsyncWebsocketConsumer):
 
     async def send_amount(self, event):
         await self.send(text_data=json.dumps(event))
+
+
+class BidNotificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        pass
+
+    # @database_sync_to_async
+    # def create_notification(self, user, content):
+        # return Notification.objects.create(user=user, content=content)
+
+    @database_sync_to_async
+    def create_notification(self, user, content):
+        return BaseUser.objects.create(user=user, content=content)
+
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        user = self.scope["user"]
+        content = text_data_json['content']
+
+        # Create a notification in the database
+        # notification = await self.create_notification(user, content)  
+
+        # Send the notification to the user
+        await self.send(text_data=json.dumps({
+            'type': 'notification',
+            'content': content,
+            # 'created_at': str(notification.created_at),
+        }))
+
+from channels.generic.websocket import AsyncWebsocketConsumer
+import json
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        pass
+
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        print(text_data_json)
+        # Send the notification to the user
+        await self.send(text_data=json.dumps({
+            'type': 'notification',
+            'content': text_data_json['content'],
+        }))
+    
+    async def send_bid_notification(self, user_id, content):
+        group_name = f"user_{user_id}"
+        message = {
+            'type': 'notification',
+            'content': content,
+        }
+        await self.channel_layer.group_add(group_name, self.channel_name)
+        await self.channel_layer.group_send(group_name, message)
