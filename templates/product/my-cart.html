@@ -199,7 +199,7 @@
                         'count': currentVal+1,
                         'csrfmiddlewaretoken': '{{ csrf_token }}',
                     },
-                    url: `/add_cart/${productslug}/`,
+                    url: `/api/add_cart/${productslug}/`,
                     success: function (data) {
                       console.log(`price_${productslug}`)
                       const priceElement = document.getElementById(`price_${productslug}`)
@@ -240,7 +240,7 @@
                     'count': currentVal - 1,
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                 },
-                url: `/add_cart/${productslug}/`,
+                url: `/api/add_cart/${productslug}/`,
                 success: function (data) {
                   console.log(`price_${productslug}`)
                   const priceElement = document.getElementById(`price_${productslug}`)
@@ -269,7 +269,7 @@
                   'key': 'remove_cart',
                   'csrfmiddlewaretoken': '{{ csrf_token }}',
               },
-              url: `/add_cart/${productSlug}/`,
+              url: `/api/add_cart/${productSlug}/`,
               success: function (data) {
                   console.log(data)
                   $(`#${productSlug}`).remove();

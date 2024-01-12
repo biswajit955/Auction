@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Image, Category, Product, Bid, ProductVisit, CartItem, Watchlist
+from .models import Image, Category, Product, Bid, ProductVisit, CartItem, Watchlist ,Notification
 
 
 @admin.register(Image)
@@ -85,3 +85,8 @@ class CartItemAdmin(admin.ModelAdmin):
 class WatchlistAdmin(admin.ModelAdmin):
     list_display = ('id', 'user')
     list_filter = ('user',)
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'content', 'is_read', 'created_at')
+    list_filter = ('id',)

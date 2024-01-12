@@ -144,5 +144,13 @@ class Watchlist(models.Model):
     user = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
     product = models.ManyToManyField(Product,related_name='fav_product')
 
+
+class Notification(models.Model):
+    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='notification_product',null=True,blank=True)
+    content = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)  
     
-    
+    # def __str__(self):
+    #     return self.user.username

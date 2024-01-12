@@ -668,7 +668,7 @@
         var slug = '{{ product_detail.slug }}';
         $.ajax({
             method: 'GET',
-            url: `/watchlist/${slug}/`,
+            url: `/api/watchlist/${slug}/`,
             success: function (data) {
                 console.log(data,"-----------");
                 if (data['product'].includes(slug)){
@@ -695,7 +695,7 @@
                         'key': 'remove_select',
                         'csrfmiddlewaretoken': '{{ csrf_token }}',
                     },
-                    url: `/watchlist/${slug}/`,
+                    url: `/api/watchlist/${slug}/`,
                     success: function (data) {
                         console.log(data);     
                     },
@@ -707,7 +707,7 @@
                         'key': 'select',
                         'csrfmiddlewaretoken': '{{ csrf_token }}',
                     },
-                    url: `/watchlist/${slug}/`,
+                    url: `/api/watchlist/${slug}/`,
                     success: function (data) {
                         console.log(data);     
                     },
@@ -811,7 +811,7 @@
         console.log(slug);
         $.ajax({
             method: 'GET',
-            url: `/add_cart/${slug}/`,
+            url: `/api/add_cart/${slug}/`,
             success: function (data) {
                 try{
                     if (data['products'].includes(slug)){
@@ -834,7 +834,7 @@
                                     'key': 'add_cart',
                                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                                 },
-                                url: `/add_cart/${slug}/`,
+                                url: `/api/add_cart/${slug}/`,
                                 success: function (data) {
                                     console.log(data);     
                                 },
@@ -854,7 +854,7 @@
                                 'key': 'add_cart',
                                 'csrfmiddlewaretoken': '{{ csrf_token }}',
                             },
-                            url: `/add_cart/${slug}/`,
+                            url: `/api/add_cart/${slug}/`,
                             success: function (data) {
                                 console.log(data);     
                             },
@@ -888,10 +888,10 @@
             'ws://' + window.location.host +
             '/ws/online_users/' + roomName + '/');
 
-        console.log(user_count_socket)
+        {% comment %} console.log(user_count_socket) {% endcomment %}
 
         user_count_socket.onopen = function(event) {
-            console.log("WebSocket connection opened.");
+            {% comment %} console.log("WebSocket connection opened."); {% endcomment %}
         };
 
         user_count_socket.onmessage = function(event) {
@@ -911,10 +911,10 @@
         const update_bid_socket = new WebSocket(
             'ws://' + window.location.host +'/ws/update_bid/' + roomName +'/');
 
-        console.log(update_bid_socket)
+        {% comment %} console.log(update_bid_socket) {% endcomment %}
 
         update_bid_socket.onopen = function(event) {
-            console.log("update_bid_socket WebSocket connection opened.");
+            {% comment %} console.log("update_bid_socket WebSocket connection opened."); {% endcomment %}
         };
 
         submit_bid.addEventListener("click", () => send_mgs())
@@ -922,7 +922,7 @@
         function send_mgs(){
             const amount = document.getElementById('rangeValue').value
             const user = "{{ user }}";
-            console.log(user,"---------------");
+            {% comment %} console.log(user,"---------------"); {% endcomment %}
 
             update_bid_socket.send(
                 JSON.stringify(
