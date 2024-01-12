@@ -67,8 +67,6 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 
-from rest_framework import serializers
-
 class AddCartSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     products = serializers.SerializerMethodField()
@@ -79,6 +77,7 @@ class AddCartSerializer(serializers.ModelSerializer):
 
     def get_products(self, obj):
         return [item.product.slug for item in obj.user.cartitem_set.all()]
+        
 
 
 

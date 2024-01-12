@@ -2,8 +2,8 @@
 from channels.db import database_sync_to_async
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-
-from product.models import Product
+from datetime import datetime
+from product.models import Notification, Product
 from users.models import BaseUser
 
 class OnlineUsersConsumer(AsyncWebsocketConsumer):
@@ -78,7 +78,6 @@ class BidUpdateConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
-        print(data)
         database_amount = await database_sync_to_async(Product.objects.get)(slug=self.room_name)
         user = await database_sync_to_async(BaseUser.objects.get)(email=data['username'])
         bider_user = await database_sync_to_async(list)(database_amount.bider.all())
@@ -112,58 +111,58 @@ class BidUpdateConsumer(AsyncWebsocketConsumer):
 
 class BidNotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f"notification_{self.room_name}"
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
         await self.accept()
 
     async def disconnect(self, close_code):
-        pass
-
-    # @database_sync_to_async
-    # def create_notification(self, user, content):
-        # return Notification.objects.create(user=user, content=content)
-
-    @database_sync_to_async
-    def create_notification(self, user, content):
-        return BaseUser.objects.create(user=user, content=content)
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         user = self.scope["user"]
-        content = text_data_json['content']
+        price = text_data_json['price']
+        product = text_data_json['product']
+        data = await self.create_notification(product, price,user)
+        dt_object = datetime.fromisoformat(str(data["notification"].created_at))
+        formatted_string = dt_object.strftime("%Y-%m-%d / %H.%M")
 
-        # Create a notification in the database
-        # notification = await self.create_notification(user, content)  
-
-        # Send the notification to the user
-        await self.send(text_data=json.dumps({
-            'type': 'notification',
-            'content': content,
-            # 'created_at': str(notification.created_at),
-        }))
-
-from channels.generic.websocket import AsyncWebsocketConsumer
-import json
-
-class NotificationConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        pass
-
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        print(text_data_json)
-        # Send the notification to the user
-        await self.send(text_data=json.dumps({
-            'type': 'notification',
-            'content': text_data_json['content'],
-        }))
-    
-    async def send_bid_notification(self, user_id, content):
-        group_name = f"user_{user_id}"
-        message = {
-            'type': 'notification',
-            'content': content,
+        notification_data = {
+            'id': data["notification"].id,
+            'content': data["notification"].content,
+            'created_at': formatted_string,
+            'img':str(data["product"].thumbnail_image),
+            'slug':data["product"].slug,
         }
-        await self.channel_layer.group_add(group_name, self.channel_name)
-        await self.channel_layer.group_send(group_name, message)
+        await self.send_bid_notification(notification_data)
+
+    @database_sync_to_async
+    def create_notification(self, products, price,user):
+        pro = Product.objects.get(slug=products)
+        print(pro.current_bid_amount,price)
+        content = f" Bid for {pro.title} increased! Place your bid now!"
+        all_biders = [i.email for i in pro.bider.all()]
+        all_biders.remove(str(user))
+        for users in all_biders:
+            notification= Notification.objects.create(user=BaseUser.objects.get(email=users),product=pro, content=content)
+        return {"notification":notification,"product":pro}
+
+    async def send_bid_notification(self,content):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'notification',
+                'content': content
+            }
+        )
+
+
+    async def notification(self, event):
+        await self.send(text_data=json.dumps(event))
