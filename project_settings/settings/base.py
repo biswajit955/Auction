@@ -16,7 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # my app
-    'auction',
+    'api',
     'users',
     'product',
 
