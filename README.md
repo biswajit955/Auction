@@ -12,6 +12,30 @@ Django Auction App is a real-time bidding application built with Django, Django 
 - **Django REST Framework**: API endpoints for managing auctions, bids, and user-related actions.
 - **Celery for Periodic Tasks**: Use Celery for handling periodic tasks, such as closing auctions.
 
+## Advanced Features
+### Real-Time Notifications
+- Enjoy instant notifications when there's a new bid on an item you're interested in. This ensures you're always in the loop and can respond quickly.
+
+### User-Friendly Interface
+- Our system is designed with simplicity in mind. You don't need to be a tech expert to navigate through the auctions and place bids.
+## How to Use
+
+### Joining an Auction:
+- Look for an ongoing auction that interests you.
+- Click on the auction to join.
+
+### Placing Bids:
+
+- Once you're in an auction, you can place bids on items you like.
+- The bidding process is easy — simply enter the amount you want to bid and submit.
+### Real-Time Updates:
+
+- Our system provides real-time updates on bid changes.
+- You'll instantly see if someone outbids you or if you're winning.
+### Notifications:
+
+- Receive notifications when a new bid is placed or if there are important updates.
+
 ## Prerequisites
 
 - **Python 3.9**: Make sure you have Python 3.9 installed on your machine.
